@@ -48,3 +48,4 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.save()
 
         return user
+    
