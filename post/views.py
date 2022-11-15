@@ -1,19 +1,24 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import Post
 from .serializers import PostSerializer
+from rest_framework import generics
+
+class GetPostListView(generics.ListAPIView):
+    queryset = Post.objects.all()
+    permission_classes = (AllowAny,)
+    serializer_class = PostSerializer
 
 class PostListApiView(APIView):
     # add permission to check if user is authenticated
-    permission_classes = [IsAuthenticated]
-
     def get(self, request, *args, **kwargs):
         '''
         List all the post items for given requested user
         '''
-        posts = Post.objects.filter(user = request.user.id)
+        permission_classes = (AllowAny)
+        posts = Post.objects.all()
         serializer = PostSerializer(posts, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -21,6 +26,8 @@ class PostListApiView(APIView):
         '''
         Create the Todo with given todo data
         '''
+        permission_classes = (IsAuthenticated)
+
         data = {
             'title': request.data.get('title'), 
             'text': request.data.get('text'),
